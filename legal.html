@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>QueueKeeper - Legal Information</title>
+		<style>
+			:root {
+				/* Light mode colors */
+				--bg-primary: #ffffff;
+				--bg-secondary: #f2f2f7;
+				--bg-tertiary: #ffffff;
+				--text-primary: #000000;
+				--text-secondary: #3c3c43;
+				--text-tertiary: #8e8e93;
+				--separator: #c6c6c8;
+				--accent: #007aff;
+				--accent-hover: #0056cc;
+				--card-bg: #ffffff;
+				--card-border: rgba(0, 0, 0, 0.1);
+				--shadow: rgba(0, 0, 0, 0.1);
+			}
+
+			[data-theme="dark"] {
+				/* Dark mode colors */
+				--bg-primary: #000000;
+				--bg-secondary: #1c1c1e;
+				--bg-tertiary: #2c2c2e;
+				--text-primary: #ffffff;
+				--text-secondary: #ebebf5;
+				--text-tertiary: #8e8e93;
+				--separator: #38383a;
+				--accent: #0a84ff;
+				--accent-hover: #409cff;
+				--card-bg: #1c1c1e;
+				--card-border: rgba(255, 255, 255, 0.1);
+				--shadow: rgba(0, 0, 0, 0.3);
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+					"SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+				background: var(--bg-primary);
+				color: var(--text-primary);
+				line-height: 1.47;
+				transition: background-color 0.3s ease, color 0.3s ease;
+			}
+
+			.navbar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 1000;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--separator);
+				padding: 16px 20px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.nav-brand {
+				font-size: 20px;
+				font-weight: 700;
+				color: var(--accent);
+				text-decoration: none;
+				letter-spacing: -0.01em;
+			}
+
+			.nav-links {
+				display: flex;
+				align-items: center;
+				gap: 32px;
+			}
+
+			.nav-link {
+				color: var(--text-secondary);
+				text-decoration: none;
+				font-size: 16px;
+				font-weight: 500;
+				transition: color 0.2s ease;
+			}
+
+			.nav-link:hover {
+				color: var(--accent);
+			}
+
+			.nav-link.active {
+				color: var(--accent);
+			}
+
+			.theme-toggle {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				background: var(--bg-secondary);
+				border: 1px solid var(--separator);
+				border-radius: 20px;
+				padding: 4px;
+			}
+
+			.theme-button {
+				background: none;
+				border: none;
+				padding: 6px 12px;
+				border-radius: 16px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 500;
+				color: var(--text-secondary);
+				transition: all 0.2s ease;
+			}
+
+			.theme-button.active {
+				background: var(--accent);
+				color: white;
+			}
+
+			.theme-button:hover:not(.active) {
+				background: var(--card-bg);
+			}
+
+			.mobile-menu-button {
+				display: none;
+				background: none;
+				border: none;
+				color: var(--text-primary);
+				font-size: 24px;
+				cursor: pointer;
+				padding: 8px;
+			}
+
+			.mobile-nav {
+				display: none;
+				position: fixed;
+				top: 73px;
+				left: 0;
+				right: 0;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--separator);
+				padding: 20px;
+				flex-direction: column;
+				gap: 16px;
+				z-index: 999;
+			}
+
+			.mobile-nav.open {
+				display: flex;
+			}
+
+			.header {
+				text-align: center;
+				padding: 120px 20px 40px;
+				background: var(--bg-secondary);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.header::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: radial-gradient(
+					ellipse at center top,
+					var(--accent) 0%,
+					transparent 70%
+				);
+				opacity: 0.03;
+				pointer-events: none;
+			}
+
+			.logo {
+				font-size: clamp(28px, 6vw, 36px);
+				font-weight: 700;
+				margin-bottom: 8px;
+				letter-spacing: -0.02em;
+				color: var(--accent);
+			}
+
+			.subtitle {
+				font-size: 19px;
+				font-weight: 500;
+				color: var(--text-secondary);
+			}
+
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 40px 20px;
+			}
+
+			.nav-tabs {
+				display: flex;
+				justify-content: center;
+				margin-bottom: 40px;
+				gap: 12px;
+				background: var(--bg-secondary);
+				padding: 8px;
+				border-radius: 16px;
+				border: 1px solid var(--separator);
+			}
+
+			.tab-button {
+				padding: 12px 24px;
+				background: none;
+				border: none;
+				border-radius: 12px;
+				color: var(--text-secondary);
+				cursor: pointer;
+				font-size: 16px;
+				font-weight: 500;
+				transition: all 0.2s ease;
+				flex: 1;
+				max-width: 200px;
+			}
+
+			.tab-button:hover:not(.active) {
+				background: var(--card-bg);
+				color: var(--text-primary);
+			}
+
+			.tab-button.active {
+				background: var(--accent);
+				color: white;
+				box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2);
+			}
+
+			.content-section {
+				background: var(--card-bg);
+				border-radius: 16px;
+				border: 1px solid var(--card-border);
+				padding: 48px;
+				box-shadow: 0 1px 3px var(--shadow);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				animation: fadeIn 0.5s ease-out;
+			}
+
+			.content-section.hidden {
+				display: none;
+			}
+
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+					transform: translateY(16px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			h1 {
+				font-size: clamp(28px, 5vw, 36px);
+				font-weight: 700;
+				margin-bottom: 16px;
+				color: var(--text-primary);
+				letter-spacing: -0.02em;
+			}
+
+			h2 {
+				font-size: 22px;
+				font-weight: 600;
+				margin: 32px 0 16px 0;
+				color: var(--accent);
+				border-bottom: 1px solid var(--separator);
+				padding-bottom: 8px;
+				letter-spacing: -0.01em;
+			}
+
+			h3 {
+				font-size: 18px;
+				font-weight: 600;
+				margin: 24px 0 12px 0;
+				color: var(--text-primary);
+				letter-spacing: -0.01em;
+			}
+
+			p {
+				margin-bottom: 16px;
+				font-size: 16px;
+				color: var(--text-secondary);
+				line-height: 1.5;
+			}
+
+			ul {
+				margin: 16px 0 16px 24px;
+				color: var(--text-secondary);
+			}
+
+			li {
+				margin-bottom: 8px;
+				line-height: 1.5;
+			}
+
+			.last-updated {
+				font-style: italic;
+				color: var(--text-tertiary);
+				margin-bottom: 32px;
+				font-size: 14px;
+			}
+
+			.contact-info {
+				background: var(--bg-secondary);
+				border: 1px solid var(--accent);
+				border-radius: 12px;
+				padding: 24px;
+				margin: 24px 0;
+			}
+
+			.contact-info p {
+				color: var(--text-primary);
+				margin-bottom: 8px;
+			}
+
+			.contact-info p:last-child {
+				margin-bottom: 0;
+			}
+
+			.contact-info strong {
+				color: var(--text-primary);
+				font-weight: 600;
+			}
+
+			.footer {
+				text-align: center;
+				padding: 64px 20px 40px;
+				color: var(--text-tertiary);
+				border-top: 1px solid var(--separator);
+				margin-top: 40px;
+				font-size: 14px;
+			}
+
+			@media (max-width: 768px) {
+				.nav-links {
+					display: none;
+				}
+
+				.mobile-menu-button {
+					display: block;
+				}
+
+				.container {
+					padding: 20px 15px;
+				}
+
+				.content-section {
+					padding: 32px 24px;
+				}
+
+				.nav-tabs {
+					flex-direction: column;
+					padding: 12px;
+				}
+
+				.tab-button {
+					max-width: none;
+					padding: 16px 24px;
+				}
+
+				.header {
+					padding: 100px 20px 32px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar">
+			<a href="index.html" class="nav-brand">QueueKeeper</a>
+
+			<div class="nav-links">
+				<a href="index.html" class="nav-link">Home</a>
+				<a href="legal.html" class="nav-link active">Privacy & Terms</a>
+				<a href="mailto:support@queuekeeper.app" class="nav-link">Contact</a>
+				<div class="theme-toggle">
+					<button class="theme-button active" data-theme="light">Light</button>
+					<button class="theme-button" data-theme="dark">Dark</button>
+				</div>
+			</div>
+
+			<button class="mobile-menu-button" onclick="toggleMobileMenu()">☰</button>
+		</nav>
+
+		<div class="mobile-nav" id="mobileNav">
+			<a href="index.html" class="nav-link">Home</a>
+			<a href="legal.html" class="nav-link active">Privacy & Terms</a>
+			<a href="mailto:support@queuekeeper.app" class="nav-link">Contact</a>
+			<div class="theme-toggle">
+				<button class="theme-button active" data-theme="light">Light</button>
+				<button class="theme-button" data-theme="dark">Dark</button>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="logo">QueueKeeper</div>
+			<div class="subtitle">Legal Information</div>
+		</div>
+
+		<div class="container">
+			<div class="nav-tabs">
+				<button class="tab-button active" onclick="showTab('privacy')">
+					Privacy Policy
+				</button>
+				<button class="tab-button" onclick="showTab('terms')">
+					Terms & Conditions
+				</button>
+			</div>
+
+			<div id="privacy" class="content-section">
+				<h1>Privacy Policy</h1>
+				<p class="last-updated">Last updated: December 11, 2024</p>
+
+				<h2>Introduction</h2>
+				<p>
+					Welcome to QueueKeeper. We respect your privacy and are committed to
+					protecting your personal data. This privacy policy explains how we
+					handle any information collected through the QueueKeeper app.
+				</p>
+
+				<h2>Information We Don't Collect</h2>
+				<p>
+					QueueKeeper is designed with privacy in mind. We do not collect,
+					store, or transmit any personal information about our users. The app
+					functions entirely on your device, and your data remains local to your
+					device unless you choose to use iCloud sync.
+				</p>
+
+				<h2>Data Storage</h2>
+				<ul>
+					<li>
+						All list data, including your movies, TV shows, books, and other
+						items, is stored locally on your device
+					</li>
+					<li>
+						If you enable iCloud sync, your data will be stored in your personal
+						iCloud account, which is governed by Apple's privacy policy
+					</li>
+					<li>
+						We do not have access to any data stored in your iCloud account
+					</li>
+				</ul>
+
+				<h2>Third-Party Services</h2>
+				<p>QueueKeeper interfaces with the following third-party services:</p>
+				<ul>
+					<li>
+						The Movie Database (TMDB) API for movie and TV show information
+					</li>
+					<li>Google Books API for book information</li>
+					<li>Apple's iCloud for data synchronization (optional)</li>
+				</ul>
+				<p>
+					When you search for media within the app, these queries are sent
+					directly to the respective APIs. We do not store or process these
+					search queries on our servers.
+				</p>
+
+				<h2>Analytics and Crash Reporting</h2>
+				<p>
+					We do not collect analytics data or crash reports. Any crash reports
+					are managed through Apple's built-in system and are anonymous.
+				</p>
+
+				<h2>Children's Privacy</h2>
+				<p>
+					QueueKeeper is not targeted towards children under 13 years of age,
+					and we do not knowingly collect any personal information from
+					children.
+				</p>
+
+				<h2>Changes to This Policy</h2>
+				<p>
+					We may update this privacy policy from time to time. We will notify
+					you of any changes by posting the new privacy policy in the app and
+					updating the "Last Updated" date.
+				</p>
+
+				<h2>Your Rights</h2>
+				<p>
+					Since we don't collect any personal data, there is no personal
+					information for you to access, modify, or delete. All your app data is
+					under your direct control.
+				</p>
+
+				<h2>Contact Us</h2>
+				<div class="contact-info">
+					<p>
+						If you have any questions about this privacy policy or our data
+						practices, please contact us at:
+					</p>
+					<p><strong>Email:</strong> support@queuekeeper.app</p>
+				</div>
+
+				<h2>Governing Law</h2>
+				<p>
+					This privacy policy is governed by and construed in accordance with
+					the laws of the United States.
+				</p>
+			</div>
+
+			<div id="terms" class="content-section hidden">
+				<h1>Terms & Conditions</h1>
+				<p class="last-updated">Last updated: December 11, 2024</p>
+
+				<h2>Agreement to Terms</h2>
+				<p>
+					By downloading and using QueueKeeper, you agree to be bound by these
+					Terms and Conditions.
+				</p>
+
+				<h2>Use License</h2>
+				<p>
+					We grant you a limited, non-exclusive, non-transferable license to use
+					QueueKeeper for personal, non-commercial purposes.
+				</p>
+
+				<h2>User Content</h2>
+				<p>
+					You retain all rights to the content you create and store within
+					QueueKeeper. You are responsible for the content you add to the app.
+				</p>
+
+				<h2>Restrictions</h2>
+				<p>You agree not to:</p>
+				<ul>
+					<li>
+						Modify, reverse engineer, or create derivative works of the app
+					</li>
+					<li>Use the app for any illegal purpose</li>
+					<li>
+						Attempt to gain unauthorized access to any part of the service
+					</li>
+					<li>
+						Use the app to infringe on others' intellectual property rights
+					</li>
+				</ul>
+
+				<h2>Disclaimer</h2>
+				<p>
+					The app is provided "as is" without warranties of any kind, either
+					express or implied.
+				</p>
+
+				<h2>Changes to Terms</h2>
+				<p>
+					We reserve the right to modify these terms at any time. We will notify
+					users of any material changes.
+				</p>
+			</div>
+		</div>
+
+		<div class="footer">© 2024 QueueKeeper. All rights reserved.</div>
+
+		<script>
+			// Theme management
+			const themeButtons = document.querySelectorAll(".theme-button");
+			const body = document.body;
+
+			// Check for saved theme preference or default to light mode
+			const savedTheme = localStorage.getItem("theme") || "light";
+			setTheme(savedTheme);
+
+			function setTheme(theme) {
+				if (theme === "dark") {
+					body.setAttribute("data-theme", "dark");
+				} else {
+					body.removeAttribute("data-theme");
+				}
+
+				// Update button states
+				themeButtons.forEach((btn) => {
+					btn.classList.toggle(
+						"active",
+						btn.getAttribute("data-theme") === theme,
+					);
+				});
+
+				localStorage.setItem("theme", theme);
+			}
+
+			// Theme button click handlers
+			themeButtons.forEach((button) => {
+				button.addEventListener("click", () => {
+					const theme = button.getAttribute("data-theme");
+					setTheme(theme);
+				});
+			});
+
+			// Tab functionality
+			function showTab(tabName) {
+				// Hide all content sections
+				document.querySelectorAll(".content-section").forEach((section) => {
+					section.classList.add("hidden");
+				});
+
+				// Remove active class from all buttons
+				document.querySelectorAll(".tab-button").forEach((button) => {
+					button.classList.remove("active");
+				});
+
+				// Show selected content section
+				document.getElementById(tabName).classList.remove("hidden");
+
+				// Add active class to clicked button
+				event.target.classList.add("active");
+			}
+
+			// System theme change detection
+			const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+			if (!localStorage.getItem("theme")) {
+				setTheme(mediaQuery.matches ? "dark" : "light");
+			}
+
+			mediaQuery.addEventListener("change", (e) => {
+				if (!localStorage.getItem("theme")) {
+					setTheme(e.matches ? "dark" : "light");
+				}
+			});
+
+			// Mobile menu toggle
+			function toggleMobileMenu() {
+				const mobileNav = document.getElementById("mobileNav");
+				mobileNav.classList.toggle("open");
+			}
+
+			// Close mobile menu when clicking outside
+			document.addEventListener("click", (e) => {
+				const mobileNav = document.getElementById("mobileNav");
+				const menuButton = document.querySelector(".mobile-menu-button");
+
+				if (!mobileNav.contains(e.target) && !menuButton.contains(e.target)) {
+					mobileNav.classList.remove("open");
+				}
+			});
+		</script>
+	</body>
+</html>
