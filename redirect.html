@@ -451,13 +451,10 @@
 		<div class="footer">© 2024 QueueKeeper</div>
 
 		<script>
-			// Configuration - Replace these with your actual values
 			const APP_CONFIG = {
 				deepLinkScheme: 'queuekeeper://confirmed',
-				iosAppStoreId: 'YOUR_ACTUAL_APP_ID', // Replace with your actual App Store ID
-				androidPackageName: 'com.yourcompany.queuekeeper', // Replace with your actual package name
-				androidAppStoreUrl: 'https://play.google.com/store/apps/details?id=com.yourcompany.queuekeeper',
-				iosAppStoreUrl: 'https://apps.apple.com/app/queuekeeper/id' // Will be completed with the app ID
+				iosAppStoreId: '6737788937', 
+				iosAppStoreUrl: 'https://apps.apple.com/app/queuekeeper/id6737788937'
 			};
 
 			// Device detection
@@ -468,9 +465,6 @@
 					return 'ios';
 				}
 				
-				if (/android/i.test(userAgent)) {
-					return 'android';
-				}
 				
 				return 'desktop';
 			}
@@ -488,16 +482,11 @@
 				const startTime = Date.now();
 				const timeout = 2500; // Reduced timeout for better UX
 				
-				// Set up fallback URLs
 				let fallbackUrl = '';
 				if (device === 'ios') {
 					fallbackUrl = APP_CONFIG.iosAppStoreUrl + APP_CONFIG.iosAppStoreId;
 					fallbackButton.href = fallbackUrl;
 					fallbackButton.textContent = 'Download from App Store';
-				} else if (device === 'android') {
-					fallbackUrl = APP_CONFIG.androidAppStoreUrl;
-					fallbackButton.href = fallbackUrl;
-					fallbackButton.textContent = 'Download from Play Store';
 				} else {
 					// Desktop fallback
 					fallbackUrl = APP_CONFIG.iosAppStoreUrl + APP_CONFIG.iosAppStoreId;
