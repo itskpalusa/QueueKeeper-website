@@ -3,272 +3,794 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>QueueKeeper - Legal</title>
+		<title>QueueKeeper - Your Entertainment Queue Manager</title>
+		<meta
+			name="description"
+			content="Track your movie watchlist, TV shows, books, and video games. Share lists with friends. Never lose track of what to watch, read, or play next." />
 		<style>
 			:root {
-				--primary-color: #4a90e2;
-				--secondary-color: #6c63ff;
-				--text-color: #333;
-				--bg-color: #f5f7fa;
+				/* Light mode colors */
+				--bg-primary: #ffffff;
+				--bg-secondary: #f2f2f7;
+				--bg-tertiary: #ffffff;
+				--text-primary: #000000;
+				--text-secondary: #3c3c43;
+				--text-tertiary: #8e8e93;
+				--separator: #c6c6c8;
+				--accent: #007aff;
+				--accent-hover: #0056cc;
+				--card-bg: #ffffff;
+				--card-border: rgba(0, 0, 0, 0.1);
+				--shadow: rgba(0, 0, 0, 0.1);
+			}
+
+			[data-theme="dark"] {
+				/* Dark mode colors */
+				--bg-primary: #000000;
+				--bg-secondary: #1c1c1e;
+				--bg-tertiary: #2c2c2e;
+				--text-primary: #ffffff;
+				--text-secondary: #ebebf5;
+				--text-tertiary: #8e8e93;
+				--separator: #38383a;
+				--accent: #0a84ff;
+				--accent-hover: #409cff;
+				--card-bg: #1c1c1e;
+				--card-border: rgba(255, 255, 255, 0.1);
+				--shadow: rgba(0, 0, 0, 0.3);
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
 			}
 
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-					Oxygen, Ubuntu, Cantarell, sans-serif;
-				line-height: 1.6;
-				margin: 0;
-				padding: 0;
-				background: var(--bg-color);
-				color: var(--text-color);
+				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+					"SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+				background: var(--bg-primary);
+				color: var(--text-primary);
+				line-height: 1.47;
+				transition: background-color 0.3s ease, color 0.3s ease;
 			}
 
-			header {
-				background: linear-gradient(
-					135deg,
-					var(--primary-color),
-					var(--secondary-color)
-				);
+			.navbar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 1000;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--separator);
+				padding: 16px 20px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.nav-brand {
+				font-size: 20px;
+				font-weight: 700;
+				color: var(--accent);
+				text-decoration: none;
+				letter-spacing: -0.01em;
+			}
+
+			.nav-links {
+				display: flex;
+				align-items: center;
+				gap: 32px;
+			}
+
+			.nav-link {
+				color: var(--text-secondary);
+				text-decoration: none;
+				font-size: 16px;
+				font-weight: 500;
+				transition: color 0.2s ease;
+			}
+
+			.nav-link:hover {
+				color: var(--accent);
+			}
+
+			.nav-link.active {
+				color: var(--accent);
+			}
+
+			.theme-toggle {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				background: var(--bg-secondary);
+				border: 1px solid var(--separator);
+				border-radius: 20px;
+				padding: 4px;
+			}
+
+			.theme-button {
+				background: none;
+				border: none;
+				padding: 6px 12px;
+				border-radius: 16px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 500;
+				color: var(--text-secondary);
+				transition: all 0.2s ease;
+			}
+
+			.theme-button.active {
+				background: var(--accent);
 				color: white;
+			}
+
+			.theme-button:hover:not(.active) {
+				background: var(--card-bg);
+			}
+
+			.mobile-menu-button {
+				display: none;
+				background: none;
+				border: none;
+				color: var(--text-primary);
+				font-size: 24px;
+				cursor: pointer;
+				padding: 8px;
+			}
+
+			.mobile-nav {
+				display: none;
+				position: fixed;
+				top: 73px;
+				left: 0;
+				right: 0;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--separator);
+				padding: 20px;
+				flex-direction: column;
+				gap: 16px;
+				z-index: 999;
+			}
+
+			.mobile-nav.open {
+				display: flex;
+			}
+
+			.hero {
+				background: var(--bg-secondary);
+				padding: 160px 20px 80px;
 				text-align: center;
-				padding: 3rem 1rem;
-				margin-bottom: 2rem;
+				position: relative;
+				overflow: hidden;
 			}
 
-			.container {
-				max-width: 800px;
+			.hero::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: radial-gradient(
+					ellipse at center top,
+					var(--accent) 0%,
+					transparent 70%
+				);
+				opacity: 0.03;
+				pointer-events: none;
+			}
+
+			.hero h1 {
+				font-size: clamp(40px, 8vw, 64px);
+				font-weight: 700;
+				margin-bottom: 16px;
+				color: var(--accent);
+				letter-spacing: -0.02em;
+			}
+
+			.hero .tagline {
+				font-size: clamp(20px, 4vw, 28px);
+				font-weight: 600;
+				margin-bottom: 24px;
+				color: var(--text-primary);
+				letter-spacing: -0.01em;
+			}
+
+			.hero .description {
+				font-size: 19px;
+				color: var(--text-secondary);
+				max-width: 600px;
+				margin: 0 auto 48px;
+				line-height: 1.42;
+			}
+
+			.cta-buttons {
+				display: flex;
+				gap: 20px;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+
+			.btn {
+				padding: 16px 32px;
+				border-radius: 12px;
+				text-decoration: none;
+				font-size: 17px;
+				font-weight: 600;
+				transition: all 0.2s ease;
+				display: inline-block;
+				position: relative;
+				overflow: hidden;
+				border: none;
+			}
+
+			.btn-primary {
+				background: var(--accent);
+				color: white;
+				box-shadow: 0 1px 3px var(--shadow), 0 4px 12px rgba(0, 122, 255, 0.15);
+			}
+
+			.btn-primary:hover {
+				background: var(--accent-hover);
+				transform: translateY(-1px);
+				box-shadow: 0 2px 8px var(--shadow), 0 8px 24px rgba(0, 122, 255, 0.2);
+			}
+
+			.btn-secondary {
+				background: var(--card-bg);
+				color: var(--text-primary);
+				border: 1px solid var(--separator);
+				box-shadow: 0 1px 3px var(--shadow);
+			}
+
+			.btn-secondary:hover {
+				background: var(--bg-secondary);
+				transform: translateY(-1px);
+			}
+
+			.features {
+				padding: 100px 20px;
+				max-width: 1200px;
 				margin: 0 auto;
-				padding: 0 1rem;
 			}
 
-			nav {
-				background: white;
-				padding: 1rem;
-				border-radius: 8px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				margin-bottom: 2rem;
+			.features h2 {
+				font-size: clamp(32px, 6vw, 48px);
+				font-weight: 700;
+				text-align: center;
+				margin-bottom: 64px;
+				color: var(--text-primary);
+				letter-spacing: -0.02em;
 			}
 
-			nav ul {
-				list-style: none;
-				padding: 0;
+			.features-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 40px;
+				margin-bottom: 80px;
+			}
+
+			.feature-card {
+				background: var(--card-bg);
+				border: 1px solid var(--card-border);
+				border-radius: 16px;
+				padding: 32px;
+				text-align: center;
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				box-shadow: 0 1px 3px var(--shadow);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+			}
+
+			.feature-card:hover {
+				transform: translateY(-8px) scale(1.02);
+				box-shadow: 0 8px 32px var(--shadow);
+				border-color: var(--accent);
+			}
+
+			.feature-icon {
+				font-size: 48px;
+				margin-bottom: 20px;
+				display: block;
+			}
+
+			.feature-card h3 {
+				font-size: 22px;
+				font-weight: 600;
+				margin-bottom: 12px;
+				color: var(--text-primary);
+				letter-spacing: -0.01em;
+			}
+
+			.feature-card p {
+				color: var(--text-secondary);
+				line-height: 1.5;
+				font-size: 16px;
+			}
+
+			.media-types {
+				background: var(--bg-secondary);
+				padding: 100px 20px;
+			}
+
+			.media-types h2 {
+				font-size: clamp(32px, 6vw, 48px);
+				font-weight: 700;
+				text-align: center;
+				margin-bottom: 16px;
+				color: var(--text-primary);
+				letter-spacing: -0.02em;
+			}
+
+			.media-types .subtitle {
+				text-align: center;
+				font-size: 19px;
+				color: var(--text-secondary);
+				margin-bottom: 64px;
+			}
+
+			.media-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 30px;
+				max-width: 1000px;
+				margin: 0 auto;
+			}
+
+			.media-card {
+				background: var(--card-bg);
+				border: 1px solid var(--card-border);
+				border-radius: 16px;
+				padding: 32px;
+				text-align: center;
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				box-shadow: 0 1px 3px var(--shadow);
+			}
+
+			.media-card:hover {
+				border-color: var(--accent);
+				transform: translateY(-4px);
+				box-shadow: 0 8px 32px var(--shadow);
+			}
+
+			.media-card .icon {
+				font-size: 40px;
+				margin-bottom: 15px;
+				display: block;
+			}
+
+			.media-card h3 {
+				font-size: 20px;
+				font-weight: 600;
+				margin-bottom: 8px;
+				color: var(--text-primary);
+				letter-spacing: -0.01em;
+			}
+
+			.media-card p {
+				color: var(--text-secondary);
+				font-size: 15px;
+				line-height: 1.4;
+			}
+
+			.collaboration {
+				padding: 100px 20px;
+				max-width: 1000px;
+				margin: 0 auto;
+				text-align: center;
+			}
+
+			.collaboration h2 {
+				font-size: clamp(32px, 6vw, 48px);
+				font-weight: 700;
+				margin-bottom: 24px;
+				color: var(--text-primary);
+				letter-spacing: -0.02em;
+			}
+
+			.collaboration p {
+				font-size: 19px;
+				color: var(--text-secondary);
+				margin-bottom: 48px;
+				max-width: 700px;
+				margin-left: auto;
+				margin-right: auto;
+				line-height: 1.42;
+			}
+
+			.collab-features {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 30px;
+				margin-top: 50px;
+			}
+
+			.collab-feature {
+				background: var(--card-bg);
+				border: 1px solid var(--card-border);
+				border-radius: 12px;
+				padding: 24px;
+				box-shadow: 0 1px 3px var(--shadow);
+			}
+
+			.collab-feature h4 {
+				color: var(--accent);
+				font-weight: 600;
+				margin-bottom: 8px;
+				font-size: 16px;
+			}
+
+			.collab-feature p {
+				font-size: 15px;
+				color: var(--text-secondary);
 				margin: 0;
+				line-height: 1.4;
+			}
+
+			.download {
+				background: var(--bg-secondary);
+				padding: 100px 20px;
+				text-align: center;
+			}
+
+			.download h2 {
+				font-size: clamp(32px, 6vw, 48px);
+				font-weight: 700;
+				margin-bottom: 16px;
+				color: var(--text-primary);
+				letter-spacing: -0.02em;
+			}
+
+			.download p {
+				font-size: 19px;
+				color: var(--text-secondary);
+				margin-bottom: 48px;
+			}
+
+			.app-store-badge {
+				display: inline-block;
+				background: var(--accent);
+				color: white;
+				padding: 16px 32px;
+				border-radius: 12px;
+				text-decoration: none;
+				font-size: 17px;
+				font-weight: 600;
+				transition: all 0.2s ease;
+				box-shadow: 0 2px 8px var(--shadow), 0 8px 24px rgba(0, 122, 255, 0.15);
+			}
+
+			.app-store-badge:hover {
+				background: var(--accent-hover);
+				transform: translateY(-2px);
+				box-shadow: 0 4px 16px var(--shadow), 0 12px 32px rgba(0, 122, 255, 0.2);
+			}
+
+			.footer {
+				background: var(--bg-primary);
+				padding: 64px 20px 40px;
+				text-align: center;
+				border-top: 1px solid var(--separator);
+			}
+
+			.footer-links {
 				display: flex;
 				justify-content: center;
-				gap: 2rem;
+				gap: 32px;
+				margin-bottom: 24px;
+				flex-wrap: wrap;
 			}
 
-			nav a {
-				color: var(--primary-color);
+			.footer-links a {
+				color: var(--text-secondary);
 				text-decoration: none;
+				font-size: 15px;
+				transition: color 0.2s ease;
 				font-weight: 500;
 			}
 
-			nav a:hover {
-				color: var(--secondary-color);
+			.footer-links a:hover {
+				color: var(--accent);
 			}
 
-			.content-section {
-				background: white;
-				padding: 2rem;
-				border-radius: 8px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				margin-bottom: 2rem;
+			.footer p {
+				color: var(--text-tertiary);
+				font-size: 14px;
 			}
 
-			h1 {
-				margin: 0;
-				font-size: 2.5rem;
-				font-weight: 700;
-			}
-
-			h2 {
-				color: var(--primary-color);
-				margin-top: 0;
-			}
-
-			footer {
-				text-align: center;
-				padding: 2rem;
-				background: white;
-				margin-top: 2rem;
-			}
-
-			@media (max-width: 600px) {
-				header {
-					padding: 2rem 1rem;
+			@media (max-width: 768px) {
+				.nav-links {
+					display: none;
 				}
 
-				h1 {
-					font-size: 2rem;
+				.mobile-menu-button {
+					display: block;
 				}
 
-				.content-section {
-					padding: 1rem;
+				.hero {
+					padding: 140px 20px 60px;
+				}
+
+				.hero h1 {
+					font-size: 36px;
+				}
+
+				.hero .tagline {
+					font-size: 20px;
+				}
+
+				.cta-buttons {
+					flex-direction: column;
+					align-items: center;
+				}
+
+				.features {
+					padding: 60px 20px;
+				}
+
+				.features h2,
+				.media-types h2,
+				.collaboration h2,
+				.download h2 {
+					font-size: 28px;
+				}
+
+				.features-grid {
+					grid-template-columns: 1fr;
+					gap: 30px;
 				}
 			}
 		</style>
 	</head>
 	<body>
-		<header>
-			<div class="container">
-				<h1>QueueKeeper</h1>
-				<p>Legal Information</p>
+		<nav class="navbar">
+			<a href="index.html" class="nav-brand">QueueKeeper</a>
+
+			<div class="nav-links">
+				<a href="index.html" class="nav-link active">Home</a>
+				<a href="legal.html" class="nav-link">Privacy & Terms</a>
+				<a href="mailto:support@queuekeeper.app" class="nav-link">Contact</a>
+				<div class="theme-toggle">
+					<button class="theme-button active" data-theme="light">Light</button>
+					<button class="theme-button" data-theme="dark">Dark</button>
+				</div>
 			</div>
-		</header>
 
-		<div class="container">
-			<nav>
-				<ul>
-					<li><a href="#privacy">Privacy Policy</a></li>
-					<li><a href="#terms">Terms & Conditions</a></li>
-				</ul>
-			</nav>
+			<button class="mobile-menu-button" onclick="toggleMobileMenu()">☰</button>
+		</nav>
 
-			<section id="privacy" class="content-section">
-				<h2>Privacy Policy</h2>
-				<p>Last updated: December 11, 2024</p>
-
-				<h3>Introduction</h3>
-				<p>
-					Welcome to QueueKeeper. We respect your privacy and are committed to
-					protecting your personal data. This privacy policy explains how we
-					handle any information collected through the QueueKeeper app.
-				</p>
-
-				<h3>Information We Don't Collect</h3>
-				<p>
-					QueueKeeper is designed with privacy in mind. We do not collect,
-					store, or transmit any personal information about our users. The app
-					functions entirely on your device, and your data remains local to your
-					device unless you choose to use iCloud sync.
-				</p>
-
-				<h3>Data Storage</h3>
-				<ul>
-					<li>
-						All list data, including your movies, TV shows, books, and other
-						items, is stored locally on your device
-					</li>
-					<li>
-						If you enable iCloud sync, your data will be stored in your personal
-						iCloud account, which is governed by Apple's privacy policy
-					</li>
-					<li>
-						We do not have access to any data stored in your iCloud account
-					</li>
-				</ul>
-
-				<h3>Third-Party Services</h3>
-				<p>QueueKeeper interfaces with the following third-party services:</p>
-				<ul>
-					<li>
-						The Movie Database (TMDB) API for movie and TV show information
-					</li>
-					<li>Google Books API for book information</li>
-					<li>Apple's iCloud for data synchronization (optional)</li>
-				</ul>
-				<p>
-					When you search for media within the app, these queries are sent
-					directly to the respective APIs. We do not store or process these
-					search queries on our servers.
-				</p>
-
-				<h3>Analytics and Crash Reporting</h3>
-				<p>
-					We do not collect analytics data or crash reports. Any crash reports
-					are managed through Apple's built-in system and are anonymous.
-				</p>
-
-				<h3>Children's Privacy</h3>
-				<p>
-					QueueKeeper is not targeted towards children under 13 years of age,
-					and we do not knowingly collect any personal information from
-					children.
-				</p>
-
-				<h3>Changes to This Policy</h3>
-				<p>
-					We may update this privacy policy from time to time. We will notify
-					you of any changes by posting the new privacy policy in the app and
-					updating the "Last Updated" date.
-				</p>
-
-				<h3>Your Rights</h3>
-				<p>
-					Since we don't collect any personal data, there is no personal
-					information for you to access, modify, or delete. All your app data is
-					under your direct control.
-				</p>
-
-				<h3>Contact Us</h3>
-				<p>
-					If you have any questions about this privacy policy or our data
-					practices, please contact us at:
-				</p>
-				<p>Email: hello@queuekeeper.app</p>
-
-				<h3>Governing Law</h3>
-				<p>
-					This privacy policy is governed by and construed in accordance with
-					the laws of the United States.
-				</p>
-			</section>
-
-			<section id="terms" class="content-section">
-				<h2>Terms & Conditions</h2>
-				<p>Last updated: December 11, 2024</p>
-
-				<h3>Agreement to Terms</h3>
-				<p>
-					By downloading and using QueueKeeper, you agree to be bound by these
-					Terms and Conditions.
-				</p>
-
-				<h3>Use License</h3>
-				<p>
-					We grant you a limited, non-exclusive, non-transferable license to use
-					QueueKeeper for personal, non-commercial purposes.
-				</p>
-
-				<h3>User Content</h3>
-				<p>
-					You retain all rights to the content you create and store within
-					QueueKeeper. You are responsible for the content you add to the app.
-				</p>
-
-				<h3>Restrictions</h3>
-				<p>You agree not to:</p>
-				<ul>
-					<li>
-						Modify, reverse engineer, or create derivative works of the app
-					</li>
-					<li>Use the app for any illegal purpose</li>
-					<li>
-						Attempt to gain unauthorized access to any part of the service
-					</li>
-					<li>
-						Use the app to infringe on others' intellectual property rights
-					</li>
-				</ul>
-
-				<h3>Disclaimer</h3>
-				<p>
-					The app is provided "as is" without warranties of any kind, either
-					express or implied.
-				</p>
-
-				<h3>Changes to Terms</h3>
-				<p>
-					We reserve the right to modify these terms at any time. We will notify
-					users of any material changes.
-				</p>
-			</section>
+		<div class="mobile-nav" id="mobileNav">
+			<a href="index.html" class="nav-link active">Home</a>
+			<a href="legal.html" class="nav-link">Privacy & Terms</a>
+			<a href="mailto:support@queuekeeper.app" class="nav-link">Contact</a>
+			<div class="theme-toggle">
+				<button class="theme-button active" data-theme="light">Light</button>
+				<button class="theme-button" data-theme="dark">Dark</button>
+			</div>
 		</div>
 
-		<footer>
-			<div class="container">
-				<p>© 2024 QueueKeeper. All rights reserved.</p>
+		<section class="hero">
+			<h1>QueueKeeper</h1>
+			<div class="tagline">Your Entertainment Queue Manager</div>
+			<p class="description">
+				Track your movie watchlist, TV shows, books, and video games. Share
+				lists with friends and family. Never lose track of what to watch, read,
+				or play next.
+			</p>
+			<div class="cta-buttons">
+				<a href="#download" class="btn btn-primary">Download for iOS</a>
+				<a href="legal.html" class="btn btn-secondary">Privacy & Terms</a>
 			</div>
+		</section>
+
+		<section class="features">
+			<h2>Everything You Need</h2>
+			<div class="features-grid">
+				<div class="feature-card">
+					<span class="feature-icon">📱</span>
+					<h3>Cross-Device Sync</h3>
+					<p>
+						Your lists sync seamlessly across all your devices with iCloud
+						integration. Start on your iPhone, continue on your iPad.
+					</p>
+				</div>
+				<div class="feature-card">
+					<span class="feature-icon">🤝</span>
+					<h3>Share with Friends</h3>
+					<p>
+						Create collaborative lists with friends and family. Share with
+						simple 6-digit codes and manage permissions easily.
+					</p>
+				</div>
+				<div class="feature-card">
+					<span class="feature-icon">🎙️</span>
+					<h3>Voice Search</h3>
+					<p>
+						No need to remember exact spellings. Use voice search to quickly
+						find and add movies, shows, books, and games.
+					</p>
+				</div>
+				<div class="feature-card">
+					<span class="feature-icon">📊</span>
+					<h3>Smart Analytics</h3>
+					<p>
+						Track your entertainment habits with detailed statistics, completion
+						rates, and personalized insights.
+					</p>
+				</div>
+				<div class="feature-card">
+					<span class="feature-icon">🎨</span>
+					<h3>Beautiful Customization</h3>
+					<p>
+						Personalize your lists with custom colors, icons, and layouts. Make
+						your queue uniquely yours.
+					</p>
+				</div>
+				<div class="feature-card">
+					<span class="feature-icon">🔒</span>
+					<h3>Privacy First</h3>
+					<p>
+						Sign in with Apple for maximum privacy. Your data stays secure and
+						under your control.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="media-types">
+			<h2>Track Everything</h2>
+			<p class="subtitle">One app for all your entertainment needs</p>
+			<div class="media-grid">
+				<div class="media-card">
+					<span class="icon">🎬</span>
+					<h3>Movies</h3>
+					<p>
+						Track watchlists with ratings, genres, runtime, and streaming
+						service availability
+					</p>
+				</div>
+				<div class="media-card">
+					<span class="icon">📺</span>
+					<h3>TV Shows</h3>
+					<p>
+						Monitor episode progress, seasons, and keep track of your
+						binge-watching status
+					</p>
+				</div>
+				<div class="media-card">
+					<span class="icon">📚</span>
+					<h3>Books</h3>
+					<p>
+						Organize your reading list with page counts, authors, and reading
+						progress
+					</p>
+				</div>
+				<div class="media-card">
+					<span class="icon">🎮</span>
+					<h3>Video Games</h3>
+					<p>
+						Manage your gaming backlog with platforms, completion status, and
+						playtime tracking
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="collaboration">
+			<h2>Better Together</h2>
+			<p>
+				QueueKeeper makes it easy to share your entertainment journey with
+				others. Create collaborative lists, get recommendations from friends,
+				and never run out of things to watch together.
+			</p>
+			<div class="collab-features">
+				<div class="collab-feature">
+					<h4>Simple Sharing</h4>
+					<p>Share lists with 6-digit codes - no complex setup required</p>
+				</div>
+				<div class="collab-feature">
+					<h4>Flexible Permissions</h4>
+					<p>Choose who can view, edit, or manage your shared lists</p>
+				</div>
+				<div class="collab-feature">
+					<h4>Guest Access</h4>
+					<p>Friends can join shared lists without creating an account</p>
+				</div>
+				<div class="collab-feature">
+					<h4>Real-time Sync</h4>
+					<p>Changes appear instantly for all collaborators</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="download" id="download">
+			<h2>Ready to Get Started?</h2>
+			<p>
+				Download QueueKeeper today and take control of your entertainment queue.
+			</p>
+			<a href="https://apps.apple.com/app/queuekeeper" class="app-store-badge">
+				📱 Download on the App Store
+			</a>
+		</section>
+
+		<footer class="footer">
+			<div class="footer-links">
+				<a href="legal.html">Privacy Policy</a>
+				<a href="legal.html">Terms & Conditions</a>
+				<a href="mailto:support@queuekeeper.app">Contact</a>
+				<a href="redirect.html">Support</a>
+			</div>
+			<p>© 2024 QueueKeeper. All rights reserved.</p>
 		</footer>
+
+		<script>
+			// Theme management
+			const themeButtons = document.querySelectorAll(".theme-button");
+			const body = document.body;
+
+			// Check for saved theme preference or default to light mode
+			const savedTheme = localStorage.getItem("theme") || "light";
+			setTheme(savedTheme);
+
+			function setTheme(theme) {
+				if (theme === "dark") {
+					body.setAttribute("data-theme", "dark");
+				} else {
+					body.removeAttribute("data-theme");
+				}
+
+				// Update button states
+				themeButtons.forEach((btn) => {
+					btn.classList.toggle(
+						"active",
+						btn.getAttribute("data-theme") === theme,
+					);
+				});
+
+				localStorage.setItem("theme", theme);
+			}
+
+			// Theme button click handlers
+			themeButtons.forEach((button) => {
+				button.addEventListener("click", () => {
+					const theme = button.getAttribute("data-theme");
+					setTheme(theme);
+				});
+			});
+
+			// System theme change detection
+			const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+			if (!localStorage.getItem("theme")) {
+				setTheme(mediaQuery.matches ? "dark" : "light");
+			}
+
+			mediaQuery.addEventListener("change", (e) => {
+				if (!localStorage.getItem("theme")) {
+					setTheme(e.matches ? "dark" : "light");
+				}
+			});
+
+			// Mobile menu toggle
+			function toggleMobileMenu() {
+				const mobileNav = document.getElementById("mobileNav");
+				mobileNav.classList.toggle("open");
+			}
+
+			// Close mobile menu when clicking outside
+			document.addEventListener("click", (e) => {
+				const mobileNav = document.getElementById("mobileNav");
+				const menuButton = document.querySelector(".mobile-menu-button");
+
+				if (!mobileNav.contains(e.target) && !menuButton.contains(e.target)) {
+					mobileNav.classList.remove("open");
+				}
+			});
+		</script>
 	</body>
 </html>
