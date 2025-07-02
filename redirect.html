@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>QueueKeeper - Email Confirmed</title>
+		<style>
+			:root {
+				/* Light mode colors */
+				--bg-primary: #ffffff;
+				--bg-secondary: #f2f2f7;
+				--bg-tertiary: #ffffff;
+				--text-primary: #000000;
+				--text-secondary: #3c3c43;
+				--text-tertiary: #8e8e93;
+				--separator: #c6c6c8;
+				--accent: #007aff;
+				--accent-hover: #0056cc;
+				--card-bg: #ffffff;
+				--card-border: rgba(0, 0, 0, 0.1);
+				--shadow: rgba(0, 0, 0, 0.1);
+				--success: #34c759;
+				--success-bg: rgba(52, 199, 89, 0.1);
+			}
+
+			[data-theme="dark"] {
+				/* Dark mode colors */
+				--bg-primary: #000000;
+				--bg-secondary: #1c1c1e;
+				--bg-tertiary: #2c2c2e;
+				--text-primary: #ffffff;
+				--text-secondary: #ebebf5;
+				--text-tertiary: #8e8e93;
+				--separator: #38383a;
+				--accent: #0a84ff;
+				--accent-hover: #409cff;
+				--card-bg: #1c1c1e;
+				--card-border: rgba(255, 255, 255, 0.1);
+				--shadow: rgba(0, 0, 0, 0.3);
+				--success: #30d158;
+				--success-bg: rgba(48, 209, 88, 0.15);
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+					"SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+				background: var(--bg-primary);
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				color: var(--text-primary);
+				text-align: center;
+				overflow: hidden;
+				padding: 80px 20px 20px;
+				transition: background-color 0.3s ease, color 0.3s ease;
+			}
+
+			.navbar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 1000;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--separator);
+				padding: 16px 20px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.nav-brand {
+				font-size: 20px;
+				font-weight: 700;
+				color: var(--accent);
+				text-decoration: none;
+				letter-spacing: -0.01em;
+			}
+
+			.nav-links {
+				display: flex;
+				align-items: center;
+				gap: 32px;
+			}
+
+			.nav-link {
+				color: var(--text-secondary);
+				text-decoration: none;
+				font-size: 16px;
+				font-weight: 500;
+				transition: color 0.2s ease;
+			}
+
+			.nav-link:hover {
+				color: var(--accent);
+			}
+
+			.nav-link.active {
+				color: var(--accent);
+			}
+
+			.theme-toggle {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				background: var(--bg-secondary);
+				border: 1px solid var(--separator);
+				border-radius: 20px;
+				padding: 4px;
+			}
+
+			.theme-button {
+				background: none;
+				border: none;
+				padding: 6px 12px;
+				border-radius: 16px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 500;
+				color: var(--text-secondary);
+				transition: all 0.2s ease;
+			}
+
+			.theme-button.active {
+				background: var(--accent);
+				color: white;
+			}
+
+			.theme-button:hover:not(.active) {
+				background: var(--card-bg);
+			}
+
+			.mobile-menu-button {
+				display: none;
+				background: none;
+				border: none;
+				color: var(--text-primary);
+				font-size: 24px;
+				cursor: pointer;
+				padding: 8px;
+			}
+
+			.mobile-nav {
+				display: none;
+				position: fixed;
+				top: 73px;
+				left: 0;
+				right: 0;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-bottom: 1px solid var(--separator);
+				padding: 20px;
+				flex-direction: column;
+				gap: 16px;
+				z-index: 999;
+			}
+
+			.mobile-nav.open {
+				display: flex;
+			}
+
+			.container {
+				max-width: 500px;
+				width: 100%;
+				background: var(--card-bg);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+				border-radius: 20px;
+				border: 1px solid var(--card-border);
+				padding: 48px;
+				box-shadow: 0 8px 32px var(--shadow);
+				animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.container::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: radial-gradient(
+					ellipse at center top,
+					var(--success) 0%,
+					transparent 70%
+				);
+				opacity: 0.05;
+				pointer-events: none;
+			}
+
+			@keyframes slideUp {
+				from {
+					opacity: 0;
+					transform: translateY(30px) scale(0.95);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0) scale(1);
+				}
+			}
+
+			.logo {
+				font-size: clamp(28px, 6vw, 36px);
+				font-weight: 700;
+				margin-bottom: 8px;
+				letter-spacing: -0.02em;
+				color: var(--accent);
+			}
+
+			.subtitle {
+				font-size: 17px;
+				font-weight: 500;
+				margin-bottom: 32px;
+				color: var(--text-secondary);
+			}
+
+			.checkmark {
+				width: 80px;
+				height: 80px;
+				margin: 0 auto 24px;
+				background: var(--success);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				animation: checkmarkPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s
+					both;
+				box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+			}
+
+			@keyframes checkmarkPop {
+				0% {
+					transform: scale(0);
+					opacity: 0;
+				}
+				50% {
+					transform: scale(1.15);
+				}
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+			}
+
+			.checkmark svg {
+				width: 40px;
+				height: 40px;
+				stroke: white;
+				stroke-width: 3;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+				fill: none;
+			}
+
+			.message {
+				font-size: 28px;
+				font-weight: 700;
+				margin-bottom: 12px;
+				color: var(--text-primary);
+				letter-spacing: -0.02em;
+				animation: fadeIn 0.8s ease-out 0.5s both;
+			}
+
+			.description {
+				font-size: 16px;
+				color: var(--text-secondary);
+				margin-bottom: 32px;
+				line-height: 1.5;
+				animation: fadeIn 0.8s ease-out 0.7s both;
+			}
+
+			.button {
+				display: inline-block;
+				padding: 16px 32px;
+				background: var(--accent);
+				color: white;
+				text-decoration: none;
+				border-radius: 12px;
+				font-size: 17px;
+				font-weight: 600;
+				border: none;
+				transition: all 0.2s ease;
+				animation: fadeIn 0.8s ease-out 0.9s both;
+				box-shadow: 0 2px 8px var(--shadow), 0 8px 24px rgba(0, 122, 255, 0.15);
+			}
+
+			.button:hover {
+				background: var(--accent-hover);
+				transform: translateY(-2px);
+				box-shadow: 0 4px 16px var(--shadow), 0 12px 32px rgba(0, 122, 255, 0.2);
+			}
+
+			.button:active {
+				transform: translateY(0);
+			}
+
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+					transform: translateY(10px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			.footer {
+				position: absolute;
+				bottom: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				font-size: 14px;
+				color: var(--text-tertiary);
+			}
+
+			@media (max-width: 768px) {
+				.nav-links {
+					display: none;
+				}
+
+				.mobile-menu-button {
+					display: block;
+				}
+
+				body {
+					padding: 100px 20px 20px;
+				}
+
+				.container {
+					padding: 32px 24px;
+					margin: 10px;
+				}
+
+				.logo {
+					font-size: 28px;
+				}
+
+				.message {
+					font-size: 24px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar">
+			<a href="index.html" class="nav-brand">QueueKeeper</a>
+
+			<div class="nav-links">
+				<a href="index.html" class="nav-link">Home</a>
+				<a href="legal.html" class="nav-link">Privacy & Terms</a>
+				<a href="mailto:support@queuekeeper.app" class="nav-link">Contact</a>
+				<div class="theme-toggle">
+					<button class="theme-button active" data-theme="light">Light</button>
+					<button class="theme-button" data-theme="dark">Dark</button>
+				</div>
+			</div>
+
+			<button class="mobile-menu-button" onclick="toggleMobileMenu()">☰</button>
+		</nav>
+
+		<div class="mobile-nav" id="mobileNav">
+			<a href="index.html" class="nav-link">Home</a>
+			<a href="legal.html" class="nav-link">Privacy & Terms</a>
+			<a href="mailto:support@queuekeeper.app" class="nav-link">Contact</a>
+			<div class="theme-toggle">
+				<button class="theme-button active" data-theme="light">Light</button>
+				<button class="theme-button" data-theme="dark">Dark</button>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="logo">QueueKeeper</div>
+			<div class="subtitle">Your Entertainment Queue Manager</div>
+
+			<div class="checkmark">
+				<svg viewBox="0 0 24 24">
+					<polyline points="20,6 9,17 4,12"></polyline>
+				</svg>
+			</div>
+
+			<div class="message">Email Confirmed!</div>
+			<div class="description">
+				Welcome to QueueKeeper! Your account has been verified successfully. You
+				can now access all features including shared lists and cross-device
+				sync.
+			</div>
+
+			<a href="queuekeeper://confirmed" class="button">Open QueueKeeper App</a>
+		</div>
+
+		<div class="footer">© 2024 QueueKeeper</div>
+
+		<script>
+			// Theme management
+			const themeButtons = document.querySelectorAll(".theme-button");
+			const body = document.body;
+
+			// Check for saved theme preference or default to light mode
+			const savedTheme = localStorage.getItem("theme") || "light";
+			setTheme(savedTheme);
+
+			function setTheme(theme) {
+				if (theme === "dark") {
+					body.setAttribute("data-theme", "dark");
+				} else {
+					body.removeAttribute("data-theme");
+				}
+
+				// Update button states
+				themeButtons.forEach((btn) => {
+					btn.classList.toggle(
+						"active",
+						btn.getAttribute("data-theme") === theme,
+					);
+				});
+
+				localStorage.setItem("theme", theme);
+			}
+
+			// Theme button click handlers
+			themeButtons.forEach((button) => {
+				button.addEventListener("click", () => {
+					const theme = button.getAttribute("data-theme");
+					setTheme(theme);
+				});
+			});
+
+			// System theme change detection
+			const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+			if (!localStorage.getItem("theme")) {
+				setTheme(mediaQuery.matches ? "dark" : "light");
+			}
+
+			mediaQuery.addEventListener("change", (e) => {
+				if (!localStorage.getItem("theme")) {
+					setTheme(e.matches ? "dark" : "light");
+				}
+			});
+
+			// Mobile menu toggle
+			function toggleMobileMenu() {
+				const mobileNav = document.getElementById("mobileNav");
+				mobileNav.classList.toggle("open");
+			}
+
+			// Close mobile menu when clicking outside
+			document.addEventListener("click", (e) => {
+				const mobileNav = document.getElementById("mobileNav");
+				const menuButton = document.querySelector(".mobile-menu-button");
+
+				if (!mobileNav.contains(e.target) && !menuButton.contains(e.target)) {
+					mobileNav.classList.remove("open");
+				}
+			});
+
+			// Auto-redirect to app after 3 seconds if the deep link doesn't work
+			setTimeout(() => {
+				if (
+					window.confirm(
+						"If the app didn't open automatically, would you like to be redirected to the App Store?",
+					)
+				) {
+					window.location.href =
+						"https://apps.apple.com/app/queuekeeper/id-your-app-id";
+				}
+			}, 3000);
+
+			// Handle URL parameters for Supabase confirmation
+			const urlParams = new URLSearchParams(window.location.search);
+			const token = urlParams.get("token");
+			const type = urlParams.get("type");
+
+			if (token && type === "signup") {
+				// You can add additional Supabase confirmation logic here if needed
+				console.log("Confirmation token received:", token);
+			}
+		</script>
+	</body>
+</html>
