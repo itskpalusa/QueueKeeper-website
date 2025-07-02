@@ -4,6 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>QueueKeeper - Email Confirmed</title>
+		<meta name="apple-itunes-app" content="app-id=6737788937">
 		<style>
 			:root {
 				/* Light mode colors */
@@ -282,6 +283,13 @@
 				animation: fadeIn 0.8s ease-out 0.7s both;
 			}
 
+			.button-container {
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+				animation: fadeIn 0.8s ease-out 0.9s both;
+			}
+
 			.button {
 				display: inline-block;
 				padding: 16px 32px;
@@ -293,8 +301,8 @@
 				font-weight: 600;
 				border: none;
 				transition: all 0.2s ease;
-				animation: fadeIn 0.8s ease-out 0.9s both;
 				box-shadow: 0 2px 8px var(--shadow), 0 8px 24px rgba(0, 122, 255, 0.15);
+				cursor: pointer;
 			}
 
 			.button:hover {
@@ -305,6 +313,39 @@
 
 			.button:active {
 				transform: translateY(0);
+			}
+
+			.button.secondary {
+				background: var(--bg-secondary);
+				color: var(--text-primary);
+				border: 1px solid var(--separator);
+				box-shadow: 0 2px 8px var(--shadow);
+			}
+
+			.button.secondary:hover {
+				background: var(--bg-tertiary);
+				transform: translateY(-2px);
+			}
+
+			.status-message {
+				margin-top: 16px;
+				padding: 12px;
+				border-radius: 8px;
+				font-size: 14px;
+				font-weight: 500;
+				display: none;
+			}
+
+			.status-message.success {
+				background: var(--success-bg);
+				color: var(--success);
+				border: 1px solid var(--success);
+			}
+
+			.status-message.error {
+				background: rgba(255, 59, 48, 0.1);
+				color: #ff3b30;
+				border: 1px solid #ff3b30;
 			}
 
 			@keyframes fadeIn {
@@ -399,12 +440,144 @@
 				sync.
 			</div>
 
-			<a href="queuekeeper://confirmed" class="button">Open QueueKeeper App</a>
+			<div class="button-container">
+				<button class="button" onclick="openApp()">Open QueueKeeper App</button>
+				<a href="#" class="button secondary" id="fallbackButton" style="display: none;">Download from App Store</a>
+			</div>
+
+			<div class="status-message" id="statusMessage"></div>
 		</div>
 
 		<div class="footer">© 2024 QueueKeeper</div>
 
 		<script>
+			// Configuration - Replace these with your actual values
+			const APP_CONFIG = {
+				deepLinkScheme: 'queuekeeper://confirmed',
+				iosAppStoreId: 'YOUR_ACTUAL_APP_ID', // Replace with your actual App Store ID
+				androidPackageName: 'com.yourcompany.queuekeeper', // Replace with your actual package name
+				androidAppStoreUrl: 'https://play.google.com/store/apps/details?id=com.yourcompany.queuekeeper',
+				iosAppStoreUrl: 'https://apps.apple.com/app/queuekeeper/id' // Will be completed with the app ID
+			};
+
+			// Device detection
+			function detectDevice() {
+				const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+				
+				if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+					return 'ios';
+				}
+				
+				if (/android/i.test(userAgent)) {
+					return 'android';
+				}
+				
+				return 'desktop';
+			}
+
+			// Enhanced app opening function
+			function openApp() {
+				const device = detectDevice();
+				const statusMessage = document.getElementById('statusMessage');
+				const fallbackButton = document.getElementById('fallbackButton');
+				
+				// Show attempting to open message
+				showStatus('Attempting to open QueueKeeper app...', 'success');
+				
+				// Try to open the app
+				const startTime = Date.now();
+				const timeout = 2500; // Reduced timeout for better UX
+				
+				// Set up fallback URLs
+				let fallbackUrl = '';
+				if (device === 'ios') {
+					fallbackUrl = APP_CONFIG.iosAppStoreUrl + APP_CONFIG.iosAppStoreId;
+					fallbackButton.href = fallbackUrl;
+					fallbackButton.textContent = 'Download from App Store';
+				} else if (device === 'android') {
+					fallbackUrl = APP_CONFIG.androidAppStoreUrl;
+					fallbackButton.href = fallbackUrl;
+					fallbackButton.textContent = 'Download from Play Store';
+				} else {
+					// Desktop fallback
+					fallbackUrl = APP_CONFIG.iosAppStoreUrl + APP_CONFIG.iosAppStoreId;
+					fallbackButton.href = fallbackUrl;
+					fallbackButton.textContent = 'View in App Store';
+				}
+				
+				// Attempt to open the app
+				window.location.href = APP_CONFIG.deepLinkScheme;
+				
+				// Set up fallback detection
+				const fallbackTimer = setTimeout(() => {
+					const timeElapsed = Date.now() - startTime;
+					
+					// If we're still here after the timeout, the app probably didn't open
+					if (timeElapsed >= timeout) {
+						showStatus('App not found. Would you like to download QueueKeeper?', 'error');
+						fallbackButton.style.display = 'inline-block';
+					}
+				}, timeout);
+				
+				// Clean up if the user comes back (app was opened)
+				const visibilityHandler = () => {
+					if (!document.hidden) {
+						clearTimeout(fallbackTimer);
+						showStatus('Welcome back! QueueKeeper should now be open.', 'success');
+					}
+				};
+				
+				// Listen for visibility change (user returning from app)
+				document.addEventListener('visibilitychange', visibilityHandler, { once: true });
+				
+				// Also listen for focus events
+				window.addEventListener('focus', () => {
+					clearTimeout(fallbackTimer);
+					showStatus('Welcome back! QueueKeeper should now be open.', 'success');
+				}, { once: true });
+				
+				// Clean up listeners after a reasonable time
+				setTimeout(() => {
+					document.removeEventListener('visibilitychange', visibilityHandler);
+				}, 10000);
+			}
+
+			// Show status messages
+			function showStatus(message, type) {
+				const statusMessage = document.getElementById('statusMessage');
+				statusMessage.textContent = message;
+				statusMessage.className = `status-message ${type}`;
+				statusMessage.style.display = 'block';
+				
+				// Auto-hide success messages after 3 seconds
+				if (type === 'success') {
+					setTimeout(() => {
+						statusMessage.style.display = 'none';
+					}, 3000);
+				}
+			}
+
+			// Auto-open app when page loads (with user gesture requirement consideration)
+			document.addEventListener('DOMContentLoaded', function() {
+				// Get URL parameters for confirmation handling
+				const urlParams = new URLSearchParams(window.location.search);
+				const token = urlParams.get('token');
+				const type = urlParams.get('type');
+				
+				if (token && type === 'signup') {
+					console.log('Confirmation token received:', token);
+					
+					// Auto-open app after a short delay (some browsers require user gesture)
+					setTimeout(() => {
+						// Only auto-open on mobile devices where deep links work better
+						const device = detectDevice();
+						if (device === 'ios' || device === 'android') {
+							openApp();
+						}
+					}, 1000);
+				}
+			});
+
 			// Theme management
 			const themeButtons = document.querySelectorAll(".theme-button");
 			const body = document.body;
@@ -466,28 +639,6 @@
 					mobileNav.classList.remove("open");
 				}
 			});
-
-			// Auto-redirect to app after 3 seconds if the deep link doesn't work
-			setTimeout(() => {
-				if (
-					window.confirm(
-						"If the app didn't open automatically, would you like to be redirected to the App Store?",
-					)
-				) {
-					window.location.href =
-						"https://apps.apple.com/app/queuekeeper/id-your-app-id";
-				}
-			}, 3000);
-
-			// Handle URL parameters for Supabase confirmation
-			const urlParams = new URLSearchParams(window.location.search);
-			const token = urlParams.get("token");
-			const type = urlParams.get("type");
-
-			if (token && type === "signup") {
-				// You can add additional Supabase confirmation logic here if needed
-				console.log("Confirmation token received:", token);
-			}
 		</script>
 	</body>
 </html>
